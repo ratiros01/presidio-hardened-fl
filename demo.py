@@ -99,7 +99,22 @@ def main() -> None:
     print("Secure aggregation matched FedAvg every round (individual updates never exposed).")
 
     # --- budget: reported vs true ---
-    print_report(audit(EPS_PER_ROUND, DELTA, ROUNDS))
+    a = audit(EPS_PER_ROUND, DELTA, ROUNDS)
+    print_report(a)
+
+    r, b, t = a["reported"], a["true_basic"], a["true_rdp"]
+    print("What this shows")
+    print("-" * 64)
+    print(f"  1. delta composes too: reported {r['delta']:.0e} per round becomes")
+    print(f"     {b['delta']:.0e} over {ROUNDS} rounds ({b['delta']/r['delta']:.0f}x) once composed.")
+    print(f"  2. tighter accounting: same Gaussian noise, linear comp gives")
+    print(f"     eps={b['epsilon']:.1f}, but RDP gives eps={t['epsilon']:.1f} "
+          f"({b['epsilon']/t['epsilon']:.1f}x lower).")
+    print(f"  3. secure aggregation: server saw only the sum every round,")
+    print(f"     never an individual client's update.")
+    print("-" * 64)
+    print("  => real privacy is BETTER than the loose eps, and delta must be composed.")
+    print()
 
 
 if __name__ == "__main__":
