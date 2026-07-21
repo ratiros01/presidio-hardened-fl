@@ -67,8 +67,26 @@ composition (δ now accumulates), and the tighter RDP bound.
 - Shamir (t, n) secret sharing round-trips (split → reconstruct).
 - RDP ε < basic ε for the same noise (the √n benefit); δ composes across rounds.
 
+## Threat model
+
+This fork assumes an **honest-but-curious server** and **honest-but-curious
+peers**:
+
+- The server follows the protocol but may inspect whatever it receives — so
+  Secure Aggregation ensures it only ever sees the *sum*, never an individual
+  update.
+- Fewer than a threshold `t` of clients (and the server) collude — the
+  assumption Shamir dropout recovery relies on.
+- Reported privacy budgets are taken at face value — which is exactly why
+  `verify.py` recomputes them independently.
+
 ## Notes
 
+- **Noise placement is central.** DP noise is added once to the aggregate
+  (central DP), made trustless by Secure Aggregation. A fuller design would use
+  a *distributed / discretized* Gaussian so no single party adds all the noise;
+  that is the natural next step and is intentionally left as future work rather
+  than stacking full local DP on top (which would inflate noise).
 - Secure aggregation *simulates* the Diffie–Hellman key exchange with a
   trusted-setup seed. The masking algebra and dropout recovery are the real
   protocol; only the key-exchange step is stubbed for the simulation.
